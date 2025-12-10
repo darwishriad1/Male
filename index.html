@@ -6,7 +6,7 @@
     <title>مدير الصندوق والمشتريات</title>
     
     <!-- PWA Settings -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="تطبيق لإدارة الصندوق المالي والمشتريات للوحدات العسكرية">
     
@@ -87,10 +87,11 @@
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('sw.js')
             .then(registration => {
               console.log('ServiceWorker registration successful with scope: ', registration.scope);
             })

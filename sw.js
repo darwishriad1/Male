@@ -3,9 +3,9 @@ const CACHE_NAME = 'brigade-manager-v3';
 const DYNAMIC_CACHE = 'brigade-dynamic-v3';
 
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  './',
+  './index.html',
+  './manifest.json',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800&display=swap'
 ];
