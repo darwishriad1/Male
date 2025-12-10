@@ -7,7 +7,8 @@ import {
   ArrowDownLeft, ArrowUpRight, Coins, FileSignature, X, Image as ImageIcon, 
   HandCoins, Printer, WifiOff, Edit3, Trash2, PieChart as PieChartIcon, 
   List, LayoutDashboard, FolderSearch, FileStack, ArrowDownCircle, CreditCard,
-  Download, FileSpreadsheet, Settings, Upload, Save, RefreshCw, Smartphone
+  Download, FileSpreadsheet, Settings, Upload, Save, RefreshCw, Smartphone,
+  LogOut
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, 
@@ -149,8 +150,22 @@ const usePWAInstall = () => {
 
 // --- Components ---
 
-const Header = ({ title, showBack = false, onBack, rightAction }: { title: string, showBack?: boolean, onBack?: () => void, rightAction?: React.ReactNode }) => (
-  <header className="flex justify-between items-center px-5 py-4 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] sticky top-0 z-30 pt-safe transition-all no-print border-b border-gray-100/50">
+const Header = ({ 
+  title, 
+  showBack = false, 
+  onBack, 
+  rightAction,
+  isInstallable,
+  onInstall
+}: { 
+  title: string, 
+  showBack?: boolean, 
+  onBack?: () => void, 
+  rightAction?: React.ReactNode,
+  isInstallable?: boolean,
+  onInstall?: () => void
+}) => (
+  <header className="flex justify-between items-center px-5 py-4 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] sticky top-0 z-30 pt-safe transition-all no-print border-b border-gray-100/50 select-none">
     <div className="flex items-center gap-3">
       {showBack && (
         <button onClick={onBack} className="p-2 -mr-2 hover:bg-gray-100/80 rounded-full active:scale-95 transition-all touch-manipulation">
@@ -159,7 +174,16 @@ const Header = ({ title, showBack = false, onBack, rightAction }: { title: strin
       )}
       <h1 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h1>
     </div>
-    <div className="flex gap-2">
+    <div className="flex items-center gap-2">
+       {isInstallable && onInstall && (
+         <button 
+           onClick={onInstall} 
+           className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
+         >
+           <Download className="w-4 h-4" />
+           <span>تثبيت</span>
+         </button>
+       )}
        {rightAction}
        {!rightAction && !showBack && <button className="p-2.5 rounded-full hover:bg-gray-100/80 active:bg-gray-200 transition-colors touch-manipulation"><Search className="w-6 h-6 text-gray-600" /></button>}
        {!rightAction && !showBack && <button className="p-2.5 rounded-full hover:bg-gray-100/80 active:bg-gray-200 transition-colors touch-manipulation"><Bell className="w-6 h-6 text-gray-600" /></button>}
@@ -168,7 +192,7 @@ const Header = ({ title, showBack = false, onBack, rightAction }: { title: strin
 );
 
 const EmptyState = ({ title, subtitle, icon: Icon }: { title: string, subtitle: string, icon: any }) => (
-  <div className="flex flex-col items-center justify-center py-20 text-center px-8 animate-fade-in">
+  <div className="flex flex-col items-center justify-center py-20 text-center px-8 animate-fade-in select-none">
     <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100 shadow-sm">
       <Icon className="w-10 h-10 text-gray-300" strokeWidth={1.5} />
     </div>
@@ -204,7 +228,7 @@ const TransactionDetailModal = ({ transaction, settings, onClose }: { transactio
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm print:p-0 print:bg-white print:static">
             <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto rounded-3xl shadow-2xl flex flex-col overflow-hidden print:shadow-none print:h-auto print:w-full print:rounded-none">
-                <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50 print:hidden">
+                <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50 print:hidden select-none">
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-6 h-6 text-gray-600" /></button>
                     <span className="font-bold text-gray-700">معاينة المستند</span>
                     <div className="flex gap-2">
@@ -352,7 +376,7 @@ const BottomNav = ({ active, onChange }: { active: ViewState, onChange: (v: View
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 border-t border-gray-100 pb-safe pt-2 shadow-[0_-5px_25px_rgba(0,0,0,0.04)] z-40 backdrop-blur-xl no-print">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 border-t border-gray-100 pb-safe pt-2 shadow-[0_-5px_25px_rgba(0,0,0,0.04)] z-40 backdrop-blur-2xl no-print select-none">
       <div className="flex justify-between items-end px-2 sm:px-6">
         {items.map((item) => {
           const isActive = active === item.id;
@@ -412,7 +436,7 @@ const DashboardView = ({ orders, expenses, funds, onChangeView, isInstallable, o
   const currencySymbol = CURRENCIES[activeCurrency].symbol;
 
   return (
-    <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen">
+    <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen select-none">
       <div className="bg-white px-5 pt-safe pb-8 rounded-b-[2.5rem] shadow-sm relative z-20">
         <div className="flex justify-between items-center mb-6 mt-2">
           <div className="flex items-center gap-3">
@@ -433,8 +457,12 @@ const DashboardView = ({ orders, expenses, funds, onChangeView, isInstallable, o
                 </div>
             )}
             {isInstallable && (
-                <button onClick={onInstall} className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full active:bg-emerald-100 transition-colors touch-manipulation animate-pulse" title="تثبيت التطبيق">
-                    <Download className="w-6 h-6" />
+                <button 
+                    onClick={onInstall} 
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-full shadow-lg shadow-emerald-200 active:scale-95 transition-all animate-pulse mr-2"
+                >
+                    <Smartphone className="w-4 h-4" />
+                    <span className="text-xs font-bold">تثبيت التطبيق</span>
                 </button>
             )}
             <button onClick={() => onChangeView('SETTINGS')} className="p-2.5 bg-gray-50 rounded-full active:bg-gray-200 transition-colors touch-manipulation">
@@ -548,9 +576,11 @@ const DashboardView = ({ orders, expenses, funds, onChangeView, isInstallable, o
 
 interface ProcurementProps {
     orders: Order[];
+    isInstallable: boolean;
+    onInstall: () => void;
 }
 
-const ProcurementView = ({ orders }: ProcurementProps) => {
+const ProcurementView = ({ orders, isInstallable, onInstall }: ProcurementProps) => {
   const [filter, setFilter] = useState<string>('all');
   
   const filteredOrders = orders.filter(order => {
@@ -563,8 +593,12 @@ const ProcurementView = ({ orders }: ProcurementProps) => {
   const totalOrders = orders.length;
 
   return (
-    <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen">
-        <Header title="طلبات الشراء" />
+    <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen select-none">
+        <Header 
+          title="طلبات الشراء" 
+          isInstallable={isInstallable}
+          onInstall={onInstall}
+        />
         
         <div className="px-5 mt-5">
             <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x">
@@ -620,9 +654,11 @@ interface InventoryProps {
     expenses: Expense[];
     funds: FundTransaction[];
     settings: AppSettings;
+    isInstallable: boolean;
+    onInstall: () => void;
 }
 
-const InventoryView = ({ expenses, funds, settings }: InventoryProps) => {
+const InventoryView = ({ expenses, funds, settings, isInstallable, onInstall }: InventoryProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState<'ALL' | 'VOUCHER' | 'PURCHASE' | 'FUND'>('ALL');
     const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
@@ -679,7 +715,7 @@ const InventoryView = ({ expenses, funds, settings }: InventoryProps) => {
     };
 
     return (
-        <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen">
+        <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen select-none">
              {selectedTransaction && (
                 <TransactionDetailModal 
                     transaction={selectedTransaction} 
@@ -695,9 +731,20 @@ const InventoryView = ({ expenses, funds, settings }: InventoryProps) => {
                      </div>
                      <h1 className="text-lg font-bold text-gray-900">سجل العمليات والأرشيف</h1>
                  </div>
-                 <button className="w-10 h-10 flex items-center justify-center text-gray-600 rounded-full active:bg-gray-100 transition-colors">
-                     <Menu className="w-6 h-6" />
-                 </button>
+                 <div className="flex gap-2">
+                     {isInstallable && (
+                        <button 
+                        onClick={onInstall} 
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
+                        >
+                        <Download className="w-4 h-4" />
+                        <span>تثبيت</span>
+                        </button>
+                     )}
+                    <button className="w-10 h-10 flex items-center justify-center text-gray-600 rounded-full active:bg-gray-100 transition-colors">
+                        <Menu className="w-6 h-6" />
+                    </button>
+                 </div>
              </div>
 
              <div className="px-5 mt-5 no-print">
@@ -802,9 +849,11 @@ interface FinancialProps {
     funds: FundTransaction[];
     onEditExpense: (expense: Expense) => void;
     onDeleteExpense: (id: string) => void;
+    isInstallable: boolean;
+    onInstall: () => void;
 }
 
-const FinancialReportView = ({ expenses, funds, onEditExpense, onDeleteExpense }: FinancialProps) => {
+const FinancialReportView = ({ expenses, funds, onEditExpense, onDeleteExpense, isInstallable, onInstall }: FinancialProps) => {
     const [reportTab, setReportTab] = useState<'SUMMARY' | 'LEDGER' | 'ANALYSIS'>('SUMMARY');
     const [currencyFilter, setCurrencyFilter] = useState<Currency>('YER');
     const [dateRange, setDateRange] = useState({
@@ -1038,10 +1087,12 @@ const FinancialReportView = ({ expenses, funds, onEditExpense, onDeleteExpense }
     );
 
     return (
-        <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen">
+        <div className="pb-36 animate-fade-in bg-slate-50 min-h-screen select-none">
              <Header 
                 title="التقارير المالية" 
                 showBack={true} 
+                isInstallable={isInstallable}
+                onInstall={onInstall}
                 rightAction={
                     <div className="flex gap-2">
                         <button onClick={exportToCSV} className="p-2.5 rounded-full hover:bg-green-50 active:bg-green-100 transition-colors text-emerald-700" title="تصدير إكسل">
@@ -1191,7 +1242,7 @@ const SettingsView = ({ settings, onSave, onBack, orders, expenses, funds, onRes
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen animate-fade-in pb-10">
+        <div className="bg-slate-50 min-h-screen animate-fade-in pb-10 select-none">
             <Header title="إعدادات النظام" showBack={true} onBack={onBack} />
             
             <div className="max-w-xl mx-auto px-5 py-6 space-y-6">
@@ -1363,7 +1414,7 @@ const AddFundView = ({ onSave, onCancel }: AddFundProps) => {
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen pb-safe animate-fade-in">
+        <div className="bg-slate-50 min-h-screen pb-safe animate-fade-in select-none">
              <div className="bg-emerald-600 text-white px-5 pt-safe pb-8 shadow-md rounded-b-[2rem]">
                 <div className="flex justify-between items-center mb-6">
                     <button onClick={onCancel} className="p-2 bg-white/20 rounded-full hover:bg-white/30 backdrop-blur-sm transition-colors active:scale-95">
@@ -1573,7 +1624,7 @@ const AddExpenseView = ({ onSave, onCancel, initialData, existingExpenses }: Add
   };
 
   return (
-    <div className="bg-white min-h-screen pb-safe animate-fade-in relative z-50">
+    <div className="bg-white min-h-screen pb-safe animate-fade-in relative z-50 select-none">
       <div className={`px-5 py-4 flex items-center justify-between border-b sticky top-0 z-30 pt-safe backdrop-blur-md transition-colors ${type === 'VOUCHER' ? 'bg-orange-50/90 border-orange-100' : 'bg-blue-50/90 border-blue-100'}`}>
         <button onClick={onCancel} className="p-2 -mr-2 rounded-full hover:bg-black/5 active:bg-black/10 transition-colors">
             <X className={`w-6 h-6 ${type === 'VOUCHER' ? 'text-orange-900' : 'text-blue-900'}`} />
@@ -1924,11 +1975,21 @@ export default function App() {
       )}
       
       {view === 'PROCUREMENT' && (
-        <ProcurementView orders={orders} />
+        <ProcurementView 
+          orders={orders}
+          isInstallable={isInstallable}
+          onInstall={install} 
+        />
       )}
       
       {view === 'INVENTORY' && (
-        <InventoryView expenses={expenses} funds={funds} settings={settings} />
+        <InventoryView 
+          expenses={expenses} 
+          funds={funds} 
+          settings={settings}
+          isInstallable={isInstallable}
+          onInstall={install} 
+        />
       )}
 
       {view === 'FINANCE' && (
@@ -1936,7 +1997,9 @@ export default function App() {
             expenses={expenses} 
             funds={funds} 
             onEditExpense={handleEditExpense} 
-            onDeleteExpense={handleDeleteExpense} 
+            onDeleteExpense={handleDeleteExpense}
+            isInstallable={isInstallable}
+            onInstall={install}
         />
       )}
 
