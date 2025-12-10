@@ -13,7 +13,7 @@ export const getFinancialInsight = async (
   }
   try {
     const prompt = `
-      أنت مساعد مالي ذكي لتطبيق إدارة صندوق مالي.
+      أنت مساعد مالي ذكي لتطبيق إدارة صندوق مالي عسكري/حكومي.
       الميزانية الحالية: ${currentBudget} ريال.
       آخر المصروفات: ${JSON.stringify(expenses.slice(0, 5))}.
       
@@ -49,7 +49,7 @@ export const analyzeReceiptImage = async (base64Image: string): Promise<any> => 
                 }
             },
             {
-                text: "قم باستخراج البيانات التالية من الإيصال: المبلغ الإجمالي، اسم المستفيد، التاريخ، والتصنيف (وقود، إعاشة، صيانة، أخرى). أرجع النتيجة بتنسيق JSON فقط."
+                text: "Extract data from this receipt as JSON: { amount: number, currency: 'YER'|'SAR', beneficiary: string, date: string (YYYY-MM-DD), category: string, notes: string }. Detect total amount. If unclear, return null values."
             }
         ],
         config: {

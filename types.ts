@@ -85,6 +85,9 @@ export interface AppSettings {
   footerRightTitle: string; // e.g. "المستلم"
   footerCenterTitle: string; // e.g. "أمين الصندوق"
   footerLeftTitle: string; // e.g. "قائد اللواء"
+  currencySymbolYER?: string;
+  currencySymbolSAR?: string;
+  defaultReportPeriod?: 'WEEKLY' | 'MONTHLY' | 'YEARLY';
 }
 
 export type ViewState = 'DASHBOARD' | 'PROCUREMENT' | 'INVENTORY' | 'FINANCE' | 'ADD_EXPENSE' | 'ADD_FUND' | 'SETTINGS';
