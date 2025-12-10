@@ -1,27 +1,22 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Home, ShoppingCart, FileText, Plus, Bell, Search, ArrowLeft, ChevronDown, 
-  CheckCircle, Clock, Briefcase, TrendingUp, Camera, Truck, Utensils, Wrench, 
-  Fuel, Menu, Sparkles, Inbox, Filter, Shield, Target, User, Wallet, 
+  Home, ShoppingCart, FileText, Plus, Search, ArrowLeft, ChevronDown, 
+  Briefcase, TrendingUp, Camera, Truck, Utensils, Wrench, 
+  Fuel, Sparkles, Filter, Shield, Target, User, Wallet, 
   ArrowDownLeft, ArrowUpRight, Coins, FileSignature, X, Image as ImageIcon, 
-  HandCoins, Printer, WifiOff, Edit3, Trash2, PieChart as PieChartIcon, 
-  List, LayoutDashboard, FolderSearch, FileStack, ArrowDownCircle, CreditCard,
-  Download, FileSpreadsheet, Settings, Upload, Save, RefreshCw, Smartphone,
-  LogOut, Share, Calendar, Hash
+  HandCoins, Printer, Edit3, Trash2, FolderSearch, FileStack,
+  Download, FileSpreadsheet, Settings, RefreshCw, Smartphone,
+  Calendar, Hash
 } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, 
-  PieChart, Pie, Cell, AreaChart, Area 
-} from 'recharts';
 
 // Strict separation of Type imports vs Value imports
-import { Status } from './types';
 import type { 
   ViewState, Order, Expense, FundTransaction, ExpenseType, 
   Currency, InvoiceItem, VoucherSubCategory, AppSettings 
 } from './types';
 
-import { getFinancialInsight, analyzeReceiptImage } from './services/geminiService';
+import { analyzeReceiptImage } from './services/geminiService';
 
 // --- Configuration ---
 const CURRENCIES = {
@@ -46,15 +41,13 @@ const BENEFICIARIES = [
   { id: 'OTHER', label: 'مستفيد آخر / شخص', icon: User, color: 'bg-slate-100 text-slate-700' }
 ];
 
-const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ef4444', '#64748b'];
-
 const DEFAULT_SETTINGS: AppSettings = {
   ministryName: 'ألوية العمالقة الجنوبية',
   brigadeName: 'اللواء ٤٣ عمالقة',
   unitName: 'المالية',
   footerRightTitle: 'المستلم / المستفيد',
-  footerCenterTitle: 'أمين الصندوق / احمد الحوشبي',
-  footerLeftTitle: 'يعتمد / الركن المالي | يحيى المشوشي',
+  footerCenterTitle: 'أمين الصندوق',
+  footerLeftTitle: 'يعتمد / الركن المالي',
   logo: undefined,
   currencySymbolYER: 'ر.ي',
   currencySymbolSAR: 'ر.س',
@@ -103,7 +96,6 @@ const useOnlineStatus = () => {
 const usePWAInstall = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     const handler = (e: any) => {
@@ -114,10 +106,6 @@ const usePWAInstall = () => {
 
     window.addEventListener('beforeinstallprompt', handler);
     
-    // Check if iOS
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    setIsIOS(ios);
-
     const appInstalledHandler = () => {
         setIsInstallable(false);
         setDeferredPrompt(null);
@@ -140,50 +128,10 @@ const usePWAInstall = () => {
     }
   };
 
-  return { isInstallable, install, isIOS };
+  return { isInstallable, install };
 };
 
 // --- Components ---
-
-const Header = ({ 
-  title, 
-  showBack = false, 
-  onBack, 
-  rightAction,
-  isInstallable,
-  onInstall
-}: { 
-  title: string, 
-  showBack?: boolean, 
-  onBack?: () => void, 
-  rightAction?: React.ReactNode,
-  isInstallable?: boolean,
-  onInstall?: () => void
-}) => (
-  <header className="flex justify-between items-center px-5 py-4 bg-white/80 backdrop-blur-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] sticky top-0 z-30 pt-safe transition-all no-print border-b border-gray-100/50 select-none">
-    <div className="flex items-center gap-3">
-      {showBack && (
-        <button onClick={onBack} className="p-2 -mr-2 hover:bg-gray-100/80 rounded-full active:scale-95 transition-all touch-manipulation">
-          <ArrowLeft className="w-6 h-6 text-gray-800" />
-        </button>
-      )}
-      <h1 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h1>
-    </div>
-    <div className="flex items-center gap-2">
-       {isInstallable && onInstall && (
-         <button 
-           onClick={onInstall} 
-           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
-         >
-           <Download className="w-4 h-4" />
-           <span>تثبيت</span>
-         </button>
-       )}
-       {rightAction}
-       {!rightAction && !showBack && <div className="w-8"></div>} 
-    </div>
-  </header>
-);
 
 const TransactionDetailModal = ({ transaction, settings, onClose }: { transaction: any, settings: AppSettings, onClose: () => void }) => {
     const isPurchase = transaction.categoryType === 'PURCHASE';
@@ -216,7 +164,7 @@ const TransactionDetailModal = ({ transaction, settings, onClose }: { transactio
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm print:p-0 print:bg-white print:static print:block">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm print:p-0 print:bg-white print:static print:block animate-fade-in">
             <div className="bg-white w-full max-w-3xl h-[85vh] md:h-auto rounded-3xl shadow-2xl flex flex-col overflow-hidden print:shadow-none print:h-auto print:w-full print:rounded-none">
                 <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-gray-50 print:hidden select-none">
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-6 h-6 text-gray-600" /></button>
@@ -535,8 +483,6 @@ const DashboardView = ({ orders, expenses, funds, onChangeView, isInstallable, o
   );
 };
 
-// ... AddExpenseView, AddFundView, ProcurementView, InventoryView, FinancialReportView ...
-
 const AddExpenseView = ({ onSave, onCancel, initialData, existingExpenses }: any) => {
   const [type, setType] = useState<ExpenseType>(initialData?.type || 'VOUCHER');
   const [currency, setCurrency] = useState<Currency>(initialData?.currency || 'YER');
@@ -607,7 +553,6 @@ const AddExpenseView = ({ onSave, onCancel, initialData, existingExpenses }: any
                       if (aiData.beneficiary) setBeneficiary(aiData.beneficiary);
                       if (aiData.date) setDate(aiData.date);
                       if (aiData.category) {
-                           // Simple matching logic
                            const matchedCat = CATEGORIES.find(c => c.label.includes(aiData.category) || aiData.category.includes(c.label));
                            if (matchedCat) setSelectedCategory(matchedCat.id);
                       }
@@ -777,7 +722,6 @@ const AddExpenseView = ({ onSave, onCancel, initialData, existingExpenses }: any
 };
 
 // --- SettingsView ---
-
 const SettingsView = ({ settings, onSave, onBack }: { settings: AppSettings, onSave: (s: AppSettings) => void, onBack: () => void }) => {
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -894,42 +838,6 @@ const SettingsView = ({ settings, onSave, onBack }: { settings: AppSettings, onS
   );
 }
 
-// --- Main App Component ---
-
-export default function App() {
-  const [view, setView] = useState<ViewState>('DASHBOARD');
-  const [orders, setOrders] = usePersistedState<Order[]>('orders', []);
-  const [expenses, setExpenses] = usePersistedState<Expense[]>('expenses', []);
-  const [funds, setFunds] = usePersistedState<FundTransaction[]>('funds', []);
-  const [settings, setSettings] = usePersistedState<AppSettings>('app_settings_v2', DEFAULT_SETTINGS);
-  
-  const [editingExpense, setEditingExpense] = useState<Expense | undefined>(undefined);
-  const { isInstallable, install } = usePWAInstall();
-
-  const handleSaveExpense = (newExpense: Expense) => {
-      if (editingExpense) {
-          setExpenses(prev => prev.map(e => e.id === newExpense.id ? newExpense : e));
-          setEditingExpense(undefined);
-      } else {
-          setExpenses(prev => [newExpense, ...prev]);
-      }
-      setView('INVENTORY');
-  };
-
-  return (
-    <div className="font-sans text-gray-900 bg-slate-50 min-h-screen">
-      {view === 'DASHBOARD' && <DashboardView settings={settings} orders={orders} expenses={expenses} funds={funds} onChangeView={setView} isInstallable={isInstallable} onInstall={install} />}
-      {view === 'PROCUREMENT' && <div className="p-5 text-center mt-20">عذراً، هذا القسم قيد التطوير</div>}
-      {view === 'INVENTORY' && <InventoryView expenses={expenses} funds={funds} settings={settings} isInstallable={isInstallable} onInstall={install} />}
-      {view === 'FINANCE' && <FinancialReportView expenses={expenses} funds={funds} onEditExpense={(e: Expense) => { setEditingExpense(e); setView('ADD_EXPENSE'); }} onDeleteExpense={(id: string) => setExpenses(prev => prev.filter(e => e.id !== id))} isInstallable={isInstallable} onInstall={install} />}
-      {view === 'ADD_FUND' && <AddFundView onSave={(f: FundTransaction) => { setFunds([f, ...funds]); setView('DASHBOARD'); }} onCancel={() => setView('DASHBOARD')} />}
-      {view === 'ADD_EXPENSE' && <AddExpenseView onSave={handleSaveExpense} onCancel={() => { setView('DASHBOARD'); setEditingExpense(undefined); }} initialData={editingExpense} existingExpenses={expenses} />}
-      {view === 'SETTINGS' && <SettingsView settings={settings} onSave={(s: AppSettings) => { setSettings(s); setView('DASHBOARD'); }} onBack={() => setView('DASHBOARD')} />}
-      {(view !== 'ADD_EXPENSE' && view !== 'ADD_FUND' && view !== 'SETTINGS') && <BottomNav active={view} onChange={setView} />}
-    </div>
-  );
-}
-
 // Improved Inventory View (Archive)
 const InventoryView = ({ 
   expenses, 
@@ -945,7 +853,6 @@ const InventoryView = ({
   onInstall?: () => void 
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    // Enhanced filter types
     const [filterType, setFilterType] = useState<'ALL' | 'FUND' | 'PURCHASE' | 'VOUCHER_EXPENSE' | 'VOUCHER_LOAN'>('ALL');
     const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 
@@ -996,6 +903,45 @@ const InventoryView = ({
         return matchesSearch && matchesType;
     });
 
+    // Calculate Totals for the current view
+    const totalCount = filtered.length;
+    const totalAmountYER = filtered.filter(t => t.currency === 'YER').reduce((acc, t) => acc + (t.categoryType === 'FUND' ? t.amount : -t.amount), 0);
+    const totalAmountSAR = filtered.filter(t => t.currency === 'SAR').reduce((acc, t) => acc + (t.categoryType === 'FUND' ? t.amount : -t.amount), 0);
+
+    // Group by Date
+    const groupedTransactions: { [key: string]: any[] } = {};
+    filtered.forEach(t => {
+        const dateKey = t.date;
+        if (!groupedTransactions[dateKey]) groupedTransactions[dateKey] = [];
+        groupedTransactions[dateKey].push(t);
+    });
+
+    // Export Handler
+    const handleExport = () => {
+        const headers = ['التاريخ', 'رقم المستند', 'النوع', 'الاسم/البيان', 'المبلغ', 'العملة', 'الملاحظات'];
+        const rows = filtered.map(t => [
+            t.date,
+            t.documentNumber || '-',
+            t.categoryType === 'FUND' ? 'توريد' : (t.categoryType === 'PURCHASE' ? 'شراء' : 'صرف'),
+            t.title,
+            t.amount,
+            t.currency,
+            t.notes || '-'
+        ]);
+        
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
+            + headers.join(",") + "\n" 
+            + rows.map(e => e.join(",")).join("\n");
+            
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `archive_export_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const getIcon = (type: string, subType?: string) => {
         if (type === 'FUND') return <ArrowDownLeft className="text-emerald-600" size={20} />;
         if (type === 'PURCHASE') return <ShoppingCart className="text-blue-600" size={20} />;
@@ -1024,15 +970,24 @@ const InventoryView = ({
             <div className="bg-white px-5 pt-safe pb-4 shadow-sm border-b sticky top-0 z-20">
                 <div className="flex justify-between items-center mb-4 mt-2">
                     <h1 className="text-xl font-bold text-gray-800">الأرشيف والسجلات</h1>
-                     {isInstallable && onInstall && (
+                    <div className="flex gap-2">
                         <button 
-                            onClick={onInstall} 
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
+                            onClick={handleExport}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold hover:bg-slate-200 transition-colors"
                         >
-                            <Download className="w-4 h-4" />
-                            <span>تثبيت</span>
+                            <FileSpreadsheet className="w-4 h-4" />
+                            <span>تصدير</span>
                         </button>
-                    )}
+                        {isInstallable && onInstall && (
+                            <button 
+                                onClick={onInstall} 
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-md shadow-emerald-200 active:scale-95 transition-all animate-pulse"
+                            >
+                                <Download className="w-4 h-4" />
+                                <span>تثبيت</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
                 
                 {/* Search */}
@@ -1067,45 +1022,83 @@ const InventoryView = ({
                 </div>
             </div>
 
-            {/* List */}
-            <div className="p-5 space-y-3">
-                {filtered.length > 0 ? (
-                    filtered.map((item: any) => (
-                        <div 
-                            key={item.id} 
-                            onClick={() => setSelectedTransaction(item)}
-                            className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-[0.98] transition-transform cursor-pointer"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${getColor(item.categoryType, item.subType)}`}>
-                                    {getIcon(item.categoryType, item.subType)}
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-slate-800 text-sm">{item.title}</h3>
-                                    <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mt-0.5">
-                                        <span className="flex items-center gap-1"><Calendar size={10}/> {item.date}</span>
-                                        {item.documentNumber && <span className="flex items-center gap-1 bg-slate-100 px-1.5 rounded text-slate-500"><Hash size={10}/> {item.documentNumber}</span>}
-                                    </div>
-                                    {/* Optional: Show Category/Notes Preview */}
-                                    {(item.category || item.notes) && (
-                                        <div className="text-[10px] text-gray-400 mt-1 truncate max-w-[150px]">
-                                            {CATEGORIES.find(c => c.id === item.category)?.label || item.notes}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="text-left">
-                                <span className={`font-bold text-base block ${item.categoryType === 'FUND' ? 'text-emerald-600' : 'text-red-600'}`}>
-                                    {item.categoryType === 'FUND' ? '+' : '-'}{item.amount.toLocaleString()}
+            <div className="p-5 space-y-6">
+                {/* Summary Card */}
+                {filtered.length > 0 && (
+                    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 text-white shadow-lg">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-sm font-bold text-slate-300">ملخص النتائج</h3>
+                            <span className="bg-white/10 px-2 py-1 rounded-lg text-xs font-mono">{totalCount} عملية</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 divide-x divide-x-reverse divide-white/10">
+                            <div>
+                                <span className="text-xs text-slate-400 block mb-1">الصافي (ريال يمني)</span>
+                                <span className={`text-lg font-bold dir-ltr block ${totalAmountYER >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {totalAmountYER.toLocaleString()} <span className="text-xs text-slate-500">YER</span>
                                 </span>
-                                <span className="text-[10px] text-slate-400 font-bold">{item.currency === 'YER' ? 'ر.ي' : 'ر.س'}</span>
+                            </div>
+                            <div className="pr-4">
+                                <span className="text-xs text-slate-400 block mb-1">الصافي (ريال سعودي)</span>
+                                <span className={`text-lg font-bold dir-ltr block ${totalAmountSAR >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                                    {totalAmountSAR.toLocaleString()} <span className="text-xs text-slate-500">SAR</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* List grouped by date */}
+                {Object.keys(groupedTransactions).length > 0 ? (
+                    Object.entries(groupedTransactions).map(([date, items]) => (
+                        <div key={date}>
+                            <h3 className="text-xs font-bold text-gray-400 mb-3 pr-2 border-r-2 border-gray-200">{date}</h3>
+                            <div className="space-y-3">
+                                {items.map((item: any) => (
+                                    <div 
+                                        key={item.id} 
+                                        onClick={() => setSelectedTransaction(item)}
+                                        className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center active:scale-[0.98] transition-transform cursor-pointer group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center border transition-colors group-hover:bg-opacity-80 ${getColor(item.categoryType, item.subType)}`}>
+                                                {getIcon(item.categoryType, item.subType)}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-slate-800 text-sm line-clamp-1">{item.title}</h3>
+                                                <div className="flex items-center gap-2 text-xs text-slate-400 font-medium mt-0.5">
+                                                    {item.documentNumber ? (
+                                                        <span className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded text-slate-500 font-mono">#{item.documentNumber}</span>
+                                                    ) : (
+                                                        <span className="text-xs italic opacity-50">بدون رقم</span>
+                                                    )}
+                                                    
+                                                </div>
+                                                {/* Category/Notes Preview */}
+                                                {(item.category || item.notes) && (
+                                                    <div className="text-[10px] text-gray-400 mt-1 truncate max-w-[150px]">
+                                                        {CATEGORIES.find(c => c.id === item.category)?.label || item.notes}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="text-left">
+                                            <span className={`font-bold text-base block ${item.categoryType === 'FUND' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                                {item.categoryType === 'FUND' ? '+' : '-'}{item.amount.toLocaleString()}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 font-bold">{item.currency === 'YER' ? 'ر.ي' : 'ر.س'}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     ))
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-                        <FolderSearch size={48} className="mb-4 opacity-20" />
+                    <div className="flex flex-col items-center justify-center py-10 text-slate-400">
+                        <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                            <FolderSearch size={32} className="opacity-40" />
+                        </div>
                         <p className="font-bold text-sm">لا توجد سجلات مطابقة</p>
+                        <p className="text-xs mt-1">حاول تغيير خيارات البحث أو التصفية</p>
                     </div>
                 )}
             </div>
@@ -1122,6 +1115,7 @@ const InventoryView = ({
     );
 };
 
+// Stub components for missing views to ensure compilation
 const FinancialReportView = ({ expenses, funds, onEditExpense, onDeleteExpense }: any) => {
     return (
          <div className="bg-slate-50 min-h-screen pb-36 p-5">
@@ -1144,12 +1138,81 @@ const FinancialReportView = ({ expenses, funds, onEditExpense, onDeleteExpense }
 }
 const AddFundView = ({ onSave, onCancel }: any) => {
     const [amount, setAmount] = useState('');
+    const [source, setSource] = useState('');
+    const [currency, setCurrency] = useState<Currency>('YER');
+    
     return (
-        <div className="p-5">
-            <h2 className="text-xl font-bold mb-4">استلام عهدة</h2>
-            <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-4 rounded-xl mb-4 border" placeholder="المبلغ" />
-            <button onClick={() => onSave({id: Date.now().toString(), amount: Number(amount), currency: 'YER', source: 'Import', date: new Date().toISOString().split('T')[0]})} className="w-full bg-emerald-600 text-white p-4 rounded-xl font-bold">حفظ</button>
-            <button onClick={onCancel} className="w-full mt-2 text-gray-500">إلغاء</button>
+        <div className="bg-white min-h-screen p-5 pb-safe animate-fade-in relative z-50">
+             <div className="flex justify-between items-center mb-6">
+                 <h2 className="text-xl font-bold text-gray-800">استلام عهدة (توريد)</h2>
+                 <button onClick={onCancel} className="p-2 bg-gray-100 rounded-full"><X className="w-5 h-5"/></button>
+             </div>
+            
+             <div className="space-y-4">
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">المبلغ</label>
+                    <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full p-4 rounded-xl border-2 border-emerald-100 focus:border-emerald-500 focus:outline-none text-2xl font-bold text-center" placeholder="00" />
+                </div>
+                
+                <div className="flex gap-2">
+                    <button onClick={() => setCurrency('YER')} className={`flex-1 py-3 rounded-xl font-bold border-2 ${currency === 'YER' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-100 text-gray-400'}`}>ر.ي</button>
+                    <button onClick={() => setCurrency('SAR')} className={`flex-1 py-3 rounded-xl font-bold border-2 ${currency === 'SAR' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-100 text-gray-400'}`}>ر.س</button>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">المصدر / المورد</label>
+                    <input type="text" value={source} onChange={e => setSource(e.target.value)} className="w-full p-4 rounded-xl border-2 border-gray-100 focus:border-emerald-500 focus:outline-none font-bold" placeholder="اسم الجهة الموردة..." />
+                </div>
+
+                <button 
+                    onClick={() => onSave({
+                        id: Date.now().toString(), 
+                        amount: Number(amount), 
+                        currency, 
+                        source, 
+                        date: new Date().toISOString().split('T')[0]
+                    })} 
+                    disabled={!amount || !source}
+                    className="w-full bg-emerald-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-emerald-200 mt-4 disabled:opacity-50"
+                >
+                    حفظ التوريد
+                </button>
+             </div>
         </div>
     )
+}
+
+// --- Main App Component ---
+export default function App() {
+  const [view, setView] = useState<ViewState>('DASHBOARD');
+  const [orders, setOrders] = usePersistedState<Order[]>('orders', []);
+  const [expenses, setExpenses] = usePersistedState<Expense[]>('expenses', []);
+  const [funds, setFunds] = usePersistedState<FundTransaction[]>('funds', []);
+  const [settings, setSettings] = usePersistedState<AppSettings>('app_settings_v2', DEFAULT_SETTINGS);
+  
+  const [editingExpense, setEditingExpense] = useState<Expense | undefined>(undefined);
+  const { isInstallable, install } = usePWAInstall();
+
+  const handleSaveExpense = (newExpense: Expense) => {
+      if (editingExpense) {
+          setExpenses(prev => prev.map(e => e.id === newExpense.id ? newExpense : e));
+          setEditingExpense(undefined);
+      } else {
+          setExpenses(prev => [newExpense, ...prev]);
+      }
+      setView('INVENTORY');
+  };
+
+  return (
+    <div className="font-sans text-gray-900 bg-slate-50 min-h-screen">
+      {view === 'DASHBOARD' && <DashboardView settings={settings} orders={orders} expenses={expenses} funds={funds} onChangeView={setView} isInstallable={isInstallable} onInstall={install} />}
+      {view === 'PROCUREMENT' && <div className="p-5 text-center mt-20">عذراً، هذا القسم قيد التطوير</div>}
+      {view === 'INVENTORY' && <InventoryView expenses={expenses} funds={funds} settings={settings} isInstallable={isInstallable} onInstall={install} />}
+      {view === 'FINANCE' && <FinancialReportView expenses={expenses} funds={funds} onEditExpense={(e: Expense) => { setEditingExpense(e); setView('ADD_EXPENSE'); }} onDeleteExpense={(id: string) => setExpenses(prev => prev.filter(e => e.id !== id))} isInstallable={isInstallable} onInstall={install} />}
+      {view === 'ADD_FUND' && <AddFundView onSave={(f: FundTransaction) => { setFunds([f, ...funds]); setView('DASHBOARD'); }} onCancel={() => setView('DASHBOARD')} />}
+      {view === 'ADD_EXPENSE' && <AddExpenseView onSave={handleSaveExpense} onCancel={() => { setView('DASHBOARD'); setEditingExpense(undefined); }} initialData={editingExpense} existingExpenses={expenses} />}
+      {view === 'SETTINGS' && <SettingsView settings={settings} onSave={(s: AppSettings) => { setSettings(s); setView('DASHBOARD'); }} onBack={() => setView('DASHBOARD')} />}
+      {(view !== 'ADD_EXPENSE' && view !== 'ADD_FUND' && view !== 'SETTINGS') && <BottomNav active={view} onChange={setView} />}
+    </div>
+  );
 }

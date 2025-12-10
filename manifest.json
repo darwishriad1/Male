@@ -1,13 +1,13 @@
 {
   "name": "مدير الصندوق والمشتريات",
   "short_name": "الخزنة",
-  "id": "/?source=pwa",
-  "start_url": "/?source=pwa",
+  "id": "/",
+  "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
   "background_color": "#f8fafc",
-  "theme_color": "#ffffff",
-  "orientation": "portrait-primary",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
   "scope": "/",
   "description": "نظام مالي متكامل لإدارة صندوق اللواء والمشتريات والعهد",
   "icons": [
@@ -26,21 +26,11 @@
   ],
   "shortcuts": [
     {
-      "name": "إضافة سند/فاتورة",
-      "short_name": "إضافة عملية",
-      "description": "تسجيل عملية مالية جديدة بسرعة",
-      "url": "/?action=add_expense",
-      "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/992/992651.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "استلام عهدة",
-      "short_name": "استلام",
-      "url": "/?action=add_fund",
+      "name": "إضافة عملية جديدة",
+      "short_name": "إضافة",
+      "description": "إضافة سند صرف أو فاتورة شراء",
+      "url": "/",
       "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/992/992651.png", "sizes": "192x192" }]
     }
-  ],
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
   ]
 }
